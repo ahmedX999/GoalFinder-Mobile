@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'AdvancedSearch.dart';
 
 class Field {
   final String title;
@@ -108,79 +109,55 @@ class _MyHomePageState extends State<MyHomePage> {
         Players: 12),
   ];
 
+void _toggleLoading() {
+    setState(() {
+      _isLoading = !_isLoading;
+    });
+  }
+
   @override
   void initState() {
-     super.initState();
-    // Simulate an asynchronous operation to fetch data
+    super.initState();
+    // Simulate fetching data
     Future.delayed(Duration(seconds: 2), () {
-      setState(() {
-        _isLoading = false;
-      });
+      _toggleLoading();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return _isLoading
-        ? _buildLoadingScreen() 
-        : Scaffold(
-            appBar: AppBar(
-              title: Text('Fields'),
-            ),
-            body: ListView.builder(
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Field Listings'),
+      ),
+      body: _isLoading
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : ListView.builder(
               itemCount: fields.length,
               itemBuilder: (context, index) {
-                return FieldCard(field: fields[index]);
+                return FieldCard(
+                  field: fields[index],
+                );
               },
             ),
-          );
-  }
-
-  Widget _buildLoadingScreen() {
-    return Container(
-      color: Colors.white,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          
-          Image.asset(
-            'assets/logo.png',
-            height: 150.0,
-            width: 150.0,
-          ),
-          SizedBox(height: 16.0),
-        
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 32.0),
-            child: Column(
-              children: [
-                TextFormField(
-                  decoration: InputDecoration(
-                    labelText: 'Username',
-                  ),
-                ),
-                SizedBox(height: 16.0),
-                TextFormField(
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                  ),
-                  obscureText: true,
-                ),
-                SizedBox(height: 16.0),
-                ElevatedButton(
-                  onPressed: () {
-                    // Add your login logic here
-                  },
-                  child: Text('Login'),
-                ),
-              ],
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AdvancedSearchScreen(),
             ),
-          ),
-        ],
+          );
+        },
+        icon: Icon(Icons.search),
+        label: Text('Advanced Search'),
       ),
     );
   }
 }
+
  void main() {
    runApp(MaterialApp(
      home: MyHomePage(),
