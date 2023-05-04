@@ -1,4 +1,6 @@
+import 'dart:convert';
 
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'AdvancedSearch.dart';
 import 'FieldDetailsScreen.dart';
@@ -8,10 +10,17 @@ class Field {
   final String imageUrl;
   final double price;
   final String type;
-  final int Players;
-  final String Details;
+  final String players;
+  final String details;
 
-  Field({required this.title, required this.imageUrl, required this.price, required this.type, required this.Players, required this.Details });
+  Field({
+    required this.title,
+    required this.imageUrl,
+    required this.price,
+    required this.type,
+    required this.players,
+    required this.details,
+  });
 }
 
 class FieldCard extends StatelessWidget {
@@ -25,7 +34,8 @@ class FieldCard extends StatelessWidget {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => FieldDetailsScreen(field: field)),
+          MaterialPageRoute(
+              builder: (context) => FieldDetailsScreen(field: field)),
         );
       },
       child: Card(
@@ -63,7 +73,7 @@ class FieldCard extends StatelessWidget {
                       ),
                       Expanded(
                         child: Text(
-                          "Joueurs: " + field.Players.toString(),
+                          "Joueurs: " + field.players.toString(),
                           textAlign: TextAlign.right,
                           style: TextStyle(
                             fontSize: 14.0,
@@ -88,7 +98,7 @@ class FieldCard extends StatelessWidget {
       ),
     );
   }
-  }
+}
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -97,43 +107,56 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   bool _isLoading = true;
+  List<Field> _fields = [];
 
-  final List<Field> fields = [
-    Field(
-        title: 'KICK OFF MARRAKECH',
-        imageUrl: 'https://www.gannett-cdn.com/presto/2019/08/16/PPHX/3a86ff23-35c7-4380-9c53-270f2d4e8cd4-foto_no_exif.jpg?width=660&height=440&format=pjpg&auto=webp',
-        price: 9.99,
-        type: '6vs6',
-        Players: 12,
-        Details : 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.'),
-    Field(
-        title: 'CENTRE DE FOOTBALL',
-        imageUrl: 'https://www.gannett-cdn.com/presto/2019/08/16/PPHX/3a86ff23-35c7-4380-9c53-270f2d4e8cd4-foto_no_exif.jpg?width=660&height=440&format=pjpg&auto=webp',
-        price: 19.99,
-        type: '5vs5',
-        Players: 9,
-        Details : 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.'),
-    Field(
-        title: 'LE COIN DE FOORBALL',
-        imageUrl: 'https://www.gannett-cdn.com/presto/2019/08/16/PPHX/3a86ff23-35c7-4380-9c53-270f2d4e8cd4-foto_no_exif.jpg?width=660&height=440&format=pjpg&auto=webp',
-        price: 29.99,
-        type: '6vs6',
-        Players: 12,
-        Details : 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.'),
-  ];
-
-void _toggleLoading() {
-    setState(() {
-      _isLoading = !_isLoading;
-    });
+  Future<List<Field>> _fetchFields() async {
+    final response = await http.get(
+        Uri.parse('https://645297ebbce0b0a0f74b4286.mockapi.io/fieldsdet'));
+    if (response.statusCode == 200) {
+      final List<Field> fields = [];
+      final jsonData = json.decode(response.body);
+      for (var item in jsonData) {
+        final field = Field(
+          title: item['title'],
+          imageUrl: item['imageUrl'],
+          price: double.parse(item['price']),
+          type: item['type'],
+          players: item['players'],
+          details: item['details'],
+        );
+        fields.add(field);
+      }
+      return fields;
+    } else {
+      throw Exception('Failed to fetch fields from API aaaa');
+    }
   }
 
   @override
   void initState() {
     super.initState();
-    // Simulate fetching data
-    Future.delayed(Duration(seconds: 2), () {
-      _toggleLoading();
+    _fetchFields().then((fields) {
+      setState(() {
+        _isLoading = false;
+        _fields = fields;
+      });
+    }).catchError((error) {
+      setState(() {
+        _isLoading = false;
+      });
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Error'),
+          content: Text('Failed to fetch fields from API: ${error.toString()}'),
+          actions: [
+            TextButton(
+              child: Text('OK'),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
+        ),
+      );
     });
   }
 
@@ -141,38 +164,33 @@ void _toggleLoading() {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Field Listings'),
+        title: Text('Field Booking'),
       ),
       body: _isLoading
           ? Center(
               child: CircularProgressIndicator(),
             )
           : ListView.builder(
-              itemCount: fields.length,
+              itemCount: _fields.length,
               itemBuilder: (context, index) {
-                return FieldCard(
-                  field: fields[index],
-                );
+                return FieldCard(field: _fields[index]);
               },
             ),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (context) => AdvancedSearchScreen(),
-            ),
+            MaterialPageRoute(builder: (context) => AdvancedSearchScreen()),
           );
         },
-        icon: Icon(Icons.search),
-        label: Text('Advanced Search'),
+        child: Icon(Icons.search),
       ),
     );
   }
 }
 
- void main() {
-   runApp(MaterialApp(
-     home: MyHomePage(),
-   ));
- }
+void main() {
+  runApp(MaterialApp(
+    home: MyHomePage(),
+  ));
+}

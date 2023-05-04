@@ -102,30 +102,29 @@ class _AdvancedSearchScreenState extends State<AdvancedSearchScreen> {
               ],
             ),
             SizedBox(height: 16.0),
-Row(
-  children: [
-    IconButton(
-      icon: Icon(Icons.access_time),
-      tooltip: 'Tap to open time picker',
-      onPressed: () async {
-        final pickedTime = await showTimePicker(
-          context: context,
-          initialTime: TimeOfDay.now(),
-        );
-        if (pickedTime != null) {
-          setState(() {
-            selectedTime = pickedTime;
-          });
-        }
-      },
-    ),
-    SizedBox(width: 16.0),
-    Text(
-      'Selected Time: ${selectedTime.hour}:${selectedTime.minute}',
-    ),
-  ],
-),
-
+            Row(
+              children: [
+                IconButton(
+                  icon: Icon(Icons.access_time),
+                  tooltip: 'Tap to open time picker',
+                  onPressed: () async {
+                    final pickedTime = await showTimePicker(
+                      context: context,
+                      initialTime: TimeOfDay.now(),
+                    );
+                    if (pickedTime != null) {
+                      setState(() {
+                        selectedTime = pickedTime;
+                      });
+                    }
+                  },
+                ),
+                SizedBox(width: 16.0),
+                Text(
+                  'Selected Time: ${selectedTime.hour}:${selectedTime.minute}',
+                ),
+              ],
+            ),
             SizedBox(height: 16.0),
             DropdownButtonFormField<String>(
               value: selectedDuration,
@@ -148,11 +147,11 @@ Row(
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => MyHomePage(),
-            ),
-          );
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MyHomePage(),
+                  ),
+                );
                 // Add your search functionality here, using the selected search criteria
                 print('Search Button Pressed');
                 print('Selected Perimeter: $selectedPerimeter');

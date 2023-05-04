@@ -48,7 +48,7 @@ class FieldDetailsScreen extends StatelessWidget {
                       ),
                       Expanded(
                         child: Text(
-                          "Joueurs: " + field.Players.toString(),
+                          "Joueurs: " + field.players.toString(),
                           textAlign: TextAlign.right,
                           style: TextStyle(
                             fontSize: 18.0,
@@ -75,7 +75,7 @@ class FieldDetailsScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 16.0),
                   Text(
-                    field.Details,
+                    field.details,
                     style: TextStyle(
                       fontSize: 16.0,
                       color: Colors.grey[800],
