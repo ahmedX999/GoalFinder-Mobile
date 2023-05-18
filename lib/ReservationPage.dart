@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:flutter_application_1/main.dart';
 
 class ReservationPage extends StatefulWidget {
@@ -13,6 +12,26 @@ class ReservationPage extends StatefulWidget {
 
 class _ReservationPageState extends State<ReservationPage> {
   String _selectedTime = 'Select a time';
+
+  void _showReservationConfirmation() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Réservation réussie'),
+          content: Text('Votre réservation a été effectuée avec succès.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -108,31 +127,43 @@ class _ReservationPageState extends State<ReservationPage> {
                       child: Text('6:00 PM'),
                     ),
                     DropdownMenuItem(
-                      value: '7:00 PM',
-                      child: Text('7:00 PM'),
-                    ),
-                    DropdownMenuItem(
-                      value: '8:00 PM',
-                      child: Text('8:00 PM'),
-                    ),
-                    DropdownMenuItem(
-                      value: '9:00 PM',
-                      child: Text('9:00 PM'),
-                    ),
-                  ],
+                     
+                value: '7:00 PM',
+                  child: Text('7:00 PM'),
                 ),
-                SizedBox(height: 16.0),
-                ElevatedButton(
-                  onPressed: () {
-                    // TODO: Handle reservation submission
-                  },
-                  child: Text('Réserver'),
+                DropdownMenuItem(
+                  value: '8:00 PM',
+                  child: Text('8:00 PM'),
+                ),
+                DropdownMenuItem(
+                  value: '9:00 PM',
+                  child: Text('9:00 PM'),
+                ),
+                DropdownMenuItem(
+                  value: '10:00 PM',
+                  child: Text('10:00 PM'),
+                ),
+                DropdownMenuItem(
+                  value: '11:00 PM',
+                  child: Text('11:00 PM'),
                 ),
               ],
             ),
-          ),
-        ],
+            SizedBox(height: 16.0),
+            ElevatedButton(
+              onPressed: () {
+                _showReservationConfirmation();
+               
+                    builder: (context) => MyHomePage();
+                 
+              },
+              child: Text('Réserver'),
+            ),
+          ],
+        ),
       ),
-    );
-  }
+    ],
+  ),
+);
+}
 }

@@ -4,6 +4,8 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'AdvancedSearch.dart';
 import 'FieldDetailsScreen.dart';
+import 'LoginPage.dart';
+import 'ListReservation.dart';
 
 class Field {
   final String title;
@@ -12,6 +14,8 @@ class Field {
   final String type;
   final String players;
   final String details;
+  final double longitude;
+  final double latitude;
 
   Field({
     required this.title,
@@ -20,6 +24,8 @@ class Field {
     required this.type,
     required this.players,
     required this.details,
+    required this.latitude,
+    required this.longitude,
   });
 }
 
@@ -34,8 +40,7 @@ class FieldCard extends StatelessWidget {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(
-              builder: (context) => FieldDetailsScreen(field: field)),
+          MaterialPageRoute(builder: (context) => FieldDetailsScreen(field: field)),
         );
       },
       child: Card(
@@ -123,12 +128,14 @@ class _MyHomePageState extends State<MyHomePage> {
           type: item['type'],
           players: item['players'],
           details: item['details'],
+          longitude: -7.921507,
+          latitude: 31.702120,
         );
         fields.add(field);
       }
       return fields;
     } else {
-      throw Exception('Failed to fetch fields from API aaaa');
+      throw Exception('Failed to fetch fields from API');
     }
   }
 
@@ -166,6 +173,52 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text('Field Booking'),
       ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Text(
+                'Menu',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
+              ),
+            ),
+            ListTile(
+              title: Text('Home'),
+              onTap: () {
+                // Handle Home option
+              },
+            ),
+            ListTile(
+              title: Text('Reservations'),
+              onTap: () {
+                Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ReservationListPage()),
+          );
+              },
+            ),
+            ListTile(
+              title: Text('About'),
+              onTap: () {
+                // Handle About option
+              },
+            ),
+            ListTile(
+              title: Text('Logout'),
+              onTap: () {
+                // Handle Logout option
+              },
+            ),
+          ],
+        ),
+      ),
       body: _isLoading
           ? Center(
               child: CircularProgressIndicator(),
@@ -191,6 +244,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
 void main() {
   runApp(MaterialApp(
-    home: MyHomePage(),
+    home: LoginPage(),
   ));
 }
+
