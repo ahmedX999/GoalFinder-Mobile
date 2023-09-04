@@ -12,6 +12,8 @@ class _AdvancedSearchScreenState extends State<AdvancedSearchScreen> {
   DateTime selectedDate = DateTime.now();
   TimeOfDay selectedTime = TimeOfDay.now();
   String selectedDuration = '1H';
+  String name = '';
+  String city = '';
 
   List<String> perimeters = ['10KM', '20KM', '50KM'];
   List<String> types = ['6vs6', '5vs5', '7vs7'];
@@ -40,6 +42,28 @@ class _AdvancedSearchScreenState extends State<AdvancedSearchScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            TextFormField(
+              onChanged: (value) {
+                setState(() {
+                  name = value;
+                });
+              },
+              decoration: InputDecoration(
+                labelText: 'Name',
+              ),
+            ),
+            SizedBox(height: 16.0),
+            TextFormField(
+              onChanged: (value) {
+                setState(() {
+                  city = value;
+                });
+              },
+              decoration: InputDecoration(
+                labelText: 'City',
+              ),
+            ),
+            SizedBox(height: 16.0),
             DropdownButtonFormField<String>(
               value: selectedPerimeter,
               items: perimeters.map((perimeter) {
@@ -154,6 +178,8 @@ class _AdvancedSearchScreenState extends State<AdvancedSearchScreen> {
                 );
                 // Add your search functionality here, using the selected search criteria
                 print('Search Button Pressed');
+                print('Name: $name');
+                print('City: $city');
                 print('Selected Perimeter: $selectedPerimeter');
                 print('Selected Type: $selectedType');
                 print('Selected Date: $selectedDate');

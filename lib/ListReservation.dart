@@ -1,6 +1,8 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 
 class Field {
   final String title;
@@ -21,52 +23,78 @@ class Field {
 }
 
 class Reservation {
-  final String name;
+
   final String date;
   final String time;
   final Field field;
+  final LatLng location;
 
   Reservation({
-    required this.name,
+
     required this.date,
     required this.time,
     required this.field,
+    required this.location,
   });
 }
 
 class ReservationListPage extends StatelessWidget {
-  final List<Reservation> reservations;
   final List<Field> fields = [
     Field(
-      title: 'Field 1',
-      imageUrl: 'https://example.com/field1.jpg',
-      price: 50.0,
-      type: 'Type A',
-      players: '5 vs 5',
+      title: 'KickOff',
+       imageUrl:
+          'assets/field.jpg',
+      price: 60.0,
+      type: '5 vs 5',
+      players: '0',
       details: 'Field 1 details',
     ),
     Field(
-      title: 'Field 2',
-      imageUrl: 'https://example.com/field2.jpg',
+      title: 'KickOff',
+      imageUrl:
+          'assets/field.jpg',
       price: 60.0,
-      type: 'Type B',
-      players: '7 vs 7',
+      type: '5 vs 5',
+      players: '0',
       details: 'Field 2 details',
     ),
     Field(
-      title: 'Field 3',
-      imageUrl: 'https://example.com/field3.jpg',
+      title: 'Urban',
+      imageUrl:
+          'assets/field.jpg',
       price: 70.0,
-      type: 'Type C',
-      players: '11 vs 11',
+      type: '11 vs 11',
+      players: '0',
       details: 'Field 3 details',
     ),
   ];
 
-  ReservationListPage({required this.reservations});
-
   @override
   Widget build(BuildContext context) {
+    final List<Reservation> reservations = [
+      Reservation(
+
+        date: '2023-05-20',
+        time: '10:00 AM',
+        field: fields[0],
+        location: LatLng(37.7749, -122.4194), 
+      ),
+      Reservation(
+ 
+        date: '2023-05-21',
+        time: '2:00 PM',
+        field: fields[1],
+        location: LatLng(34.0522, -118.2437), 
+      ),
+      Reservation(
+
+        date: '2023-05-22',
+        time: '6:00 PM',
+        field: fields[2],
+        location: LatLng(40.7128, -74.0060), // Example location
+      ),
+    ];
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Reservation List'),
@@ -75,25 +103,36 @@ class ReservationListPage extends StatelessWidget {
         itemCount: reservations.length,
         itemBuilder: (context, index) {
           final reservation = reservations[index];
-          final randomField = fields[Random().nextInt(fields.length)];
 
-          return Card(
-            elevation: 2.0,
-            child: ListTile(
-              leading: Image.network(
-                randomField.imageUrl,
-                width: 80.0,
-                height: 80.0,
-                fit: BoxFit.cover,
-              ),
-              title: Text(reservation.name),
-              subtitle: Text('Field: ${randomField.title}'),
-              trailing: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('Date: ${reservation.date}'),
-                  Text('Time: ${reservation.time}'),
-                ],
+          return GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => MapPage(
+                    location: reservation.location,
+                  ),
+                ),
+              );
+            },
+            child: Card(
+              elevation: 2.0,
+              child: ListTile(
+                leading: Image.network(
+                  reservation.field.imageUrl,
+                  width: 150.0,
+                  height: 100.0,
+                  fit: BoxFit.cover,
+                ),
+                
+                subtitle: Text('Field: ${reservation.field.title}'),
+                trailing: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('Date: ${reservation.date}'),
+                    Text('Time: ${reservation.time}'),
+                  ],
+                ),
               ),
             ),
           );
@@ -103,50 +142,54 @@ class ReservationListPage extends StatelessWidget {
   }
 }
 
-void main() {
-  runApp(MaterialApp(
-    home: ReservationListPage(
-      reservations: [
-        Reservation(
-          name: 'John Doe',
-          date: '2023-05-20',
-          time: '10:00 AM',
-          field: Field(
-            title: 'Field A',
-            imageUrl: 'https://example.com/fieldA.jpg',
-            price: 50.0,
-            type: 'Type A',
-            players: '5 vs 5',
-            details: 'Field A details',
-          ),
+class MapPage extends StatelessWidget {
+  final LatLng? location;
+
+  MapPage({required this.location});
+
+  @override
+  Widget build(BuildContext context) {
+    if (location == null) {
+      // Handle null location
+      return Scaffold(
+        appBar: AppBar(
+          title: Text('Map'),
         ),
-        Reservation(
-          name: 'Jane Smith',
-          date: '2023-05-21',
-          time: '2:00 PM',
-          field: Field(
-            title: 'Field B',
-            imageUrl: 'https://example.com/fieldB.jpg',
-            price: 60.0,
-            type: 'Type B',
-            players: '7 vs 7',
-            details: 'Field B details',
-          ),
+        body: Center(
+          child: Text('Invalid location'),
         ),
-        Reservation(
-          name: 'Mike Johnson',
-          date: '2023-05-22',
-          time: '6:00 PM',
-          field: Field(
-            title: 'Field C',
-            imageUrl: 'https://example.com/fieldC.jpg',
-            price: 70.0,
-            type: 'Type C',
-            players: '11 vs 11',
-            details: 'Field C details',
-          ),
+      );
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Map'),
+      ),
+      body: FlutterMap(
+        options: MapOptions(
+          center: location!,
+          zoom: 13.0,
         ),
-      ],
-    ),
-  ));
+        layers: [
+          TileLayerOptions(
+            urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+            subdomains: ['a', 'b', 'c'],
+          ),
+          MarkerLayerOptions(
+            markers: [
+              Marker(
+                width: 80.0,
+                height: 80.0,
+                point: location!,
+                builder: (context) => Icon(
+                  Icons.location_pin,
+                  color: Colors.red,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 }

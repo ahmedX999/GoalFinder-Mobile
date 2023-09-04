@@ -1,11 +1,8 @@
-import 'dart:convert';
-
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'AdvancedSearch.dart';
 import 'FieldDetailsScreen.dart';
 import 'LoginPage.dart';
 import 'ListReservation.dart';
+import 'AdvancedSearch.dart';
 
 class Field {
   final String title;
@@ -48,8 +45,8 @@ class FieldCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Image.network(
-              field.imageUrl,
+            Image.asset(
+              'assets/field.jpg',
               height: 150.0,
               width: double.infinity,
               fit: BoxFit.cover,
@@ -105,67 +102,29 @@ class FieldCard extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  bool _isLoading = true;
-  List<Field> _fields = [];
-
-  Future<List<Field>> _fetchFields() async {
-    final response = await http.get(
-        Uri.parse('https://645297ebbce0b0a0f74b4286.mockapi.io/fieldsdet'));
-    if (response.statusCode == 200) {
-      final List<Field> fields = [];
-      final jsonData = json.decode(response.body);
-      for (var item in jsonData) {
-        final field = Field(
-          title: item['title'],
-          imageUrl: item['imageUrl'],
-          price: double.parse(item['price']),
-          type: item['type'],
-          players: item['players'],
-          details: item['details'],
-          longitude: -7.921507,
-          latitude: 31.702120,
-        );
-        fields.add(field);
-      }
-      return fields;
-    } else {
-      throw Exception('Failed to fetch fields from API');
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _fetchFields().then((fields) {
-      setState(() {
-        _isLoading = false;
-        _fields = fields;
-      });
-    }).catchError((error) {
-      setState(() {
-        _isLoading = false;
-      });
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text('Error'),
-          content: Text('Failed to fetch fields from API: ${error.toString()}'),
-          actions: [
-            TextButton(
-              child: Text('OK'),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-          ],
-        ),
-      );
-    });
-  }
+class MyHomePage extends StatelessWidget {
+  final List<Field> fields = [
+    Field(
+      title: 'KickOff',
+      imageUrl: 'assets/field.jpg',
+      price: 60.0,
+      type: '5 vs 5',
+      players: '0',
+      details: 'Field 1 details',
+      latitude: 1.00015,
+      longitude: -17.12201,
+    ),
+    Field(
+      title: 'KickOff',
+      imageUrl: 'assets/field.jpg',
+      price: 70.0,
+      type: '5 vs 5',
+      players: '0',
+      details: 'Field 2 details',
+      latitude: 1.00015,
+      longitude: -17.12201,
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -199,9 +158,9 @@ class _MyHomePageState extends State<MyHomePage> {
               title: Text('Reservations'),
               onTap: () {
                 Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ReservationListPage()),
-          );
+                  context,
+                  MaterialPageRoute(builder: (context) => ReservationListPage()),
+                );
               },
             ),
             ListTile(
@@ -219,19 +178,15 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-      body: _isLoading
-          ? Center(
-              child: CircularProgressIndicator(),
-            )
-          : ListView.builder(
-              itemCount: _fields.length,
-              itemBuilder: (context, index) {
-                return FieldCard(field: _fields[index]);
-              },
-            ),
+      body: ListView.builder(
+        itemCount: fields.length,
+        itemBuilder: (context, index) {
+          return FieldCard(field: fields[index]);
+        },
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(
+           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => AdvancedSearchScreen()),
           );
@@ -247,4 +202,3 @@ void main() {
     home: LoginPage(),
   ));
 }
-

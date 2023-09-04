@@ -12,6 +12,7 @@ class ReservationPage extends StatefulWidget {
 
 class _ReservationPageState extends State<ReservationPage> {
   String _selectedTime = 'Select a time';
+  DateTime _selectedDate = DateTime.now();
 
   void _showReservationConfirmation() {
     showDialog(
@@ -31,6 +32,20 @@ class _ReservationPageState extends State<ReservationPage> {
         );
       },
     );
+  }
+
+  Future<void> _showDatePicker() async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(Duration(days: 7)),
+    );
+    if (pickedDate != null) {
+      setState(() {
+        _selectedDate = pickedDate;
+      });
+    }
   }
 
   @override
@@ -60,6 +75,27 @@ class _ReservationPageState extends State<ReservationPage> {
                     fontSize: 24.0,
                     fontWeight: FontWeight.bold,
                   ),
+                ),
+                SizedBox(height: 16.0),
+                Text(
+                  'Choisir une date:',
+                  style: TextStyle(
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 8.0),
+                Row(
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.calendar_today),
+                      onPressed: _showDatePicker,
+                    ),
+                    SizedBox(width: 16.0),
+                    Text(
+                      'Selected Date: ${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
+                    ),
+                  ],
                 ),
                 SizedBox(height: 16.0),
                 Text(
@@ -95,75 +131,29 @@ class _ReservationPageState extends State<ReservationPage> {
                       child: Text('10:00 AM'),
                     ),
                     DropdownMenuItem(
-                      value: '11:00 AM',
-                      child: Text('11:00 AM'),
+                      value: '14:00 AM',
+                      child: Text('14:00 AM'),
                     ),
                     DropdownMenuItem(
-                      value: '12:00 PM',
-                      child: Text('12:00 PM'),
+                      value: '20:00 AM',
+                      child: Text('20:00 AM'),
                     ),
-                    DropdownMenuItem(
-                      value: '1:00 PM',
-                      child: Text('1:00 PM'),
-                    ),
-                    DropdownMenuItem(
-                      value: '2:00 PM',
-                      child: Text('2:00 PM'),
-                    ),
-                    DropdownMenuItem(
-                      value: '3:00 PM',
-                      child: Text('3:00 PM'),
-                    ),
-                    DropdownMenuItem(
-                      value: '4:00 PM',
-                      child: Text('4:00 PM'),
-                    ),
-                    DropdownMenuItem(
-                      value: '5:00 PM',
-                      child: Text('5:00 PM'),
-                    ),
-                    DropdownMenuItem(
-                      value: '6:00 PM',
-                      child: Text('6:00 PM'),
-                    ),
-                    DropdownMenuItem(
-                     
-                value: '7:00 PM',
-                  child: Text('7:00 PM'),
+                    
+                  ],
                 ),
-                DropdownMenuItem(
-                  value: '8:00 PM',
-                  child: Text('8:00 PM'),
-                ),
-                DropdownMenuItem(
-                  value: '9:00 PM',
-                  child: Text('9:00 PM'),
-                ),
-                DropdownMenuItem(
-                  value: '10:00 PM',
-                  child: Text('10:00 PM'),
-                ),
-                DropdownMenuItem(
-                  value: '11:00 PM',
-                  child: Text('11:00 PM'),
+                SizedBox(height: 16.0),
+                ElevatedButton(
+                  onPressed: () {
+                    _showReservationConfirmation();
+                 
+                  },
+                  child: Text('Réserver'),
                 ),
               ],
             ),
-            SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: () {
-                _showReservationConfirmation();
-               
-                    builder: (context) => MyHomePage();
-                 
-              },
-              child: Text('Réserver'),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
-    ],
-  ),
-);
-}
+    );
+  }
 }
